@@ -212,10 +212,10 @@ class ToobusyZITControlNet:
         for control_type, image, enabled, strength, preprocess in slots:
             if image is None:
                 if enabled:
-                    print(f"[toobusy ZIT ControlNet] {control_type} is on but has no image connected — skipped.")
+                    print(f"[toobusy ZIT ControlNet] {control_type} is on but has no image connected - skipped.")
                 continue
             if not enabled:
-                print(f"[toobusy ZIT ControlNet] {control_type} image connected but switched off — skipped.")
+                print(f"[toobusy ZIT ControlNet] {control_type} image connected but switched off - skipped.")
                 continue
             processed = (
                 self._preprocess(control_type, image, preprocessor_resolution, canny_low, canny_high)
@@ -226,7 +226,7 @@ class ToobusyZITControlNet:
             previews.append((control_type, processed))
 
         if not entries:
-            print("[toobusy ZIT ControlNet] No active control slot — Z-Image Turbo will run unpatched.")
+            print("[toobusy ZIT ControlNet] No active control slot - Z-Image Turbo will run unpatched.")
 
         control = {"patch_name": patch_name, "entries": entries}
         return {"ui": {"images": _save_previews(previews)}, "result": (control,)}

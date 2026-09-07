@@ -101,7 +101,7 @@ def load_dit_pipeline(handle):
     pipe.denoising_model().LQ_proj_in = Causal_LQ4x_Proj(in_dim=3, out_dim=1536, layer_num=1).to(
         "cpu", dtype=torch.bfloat16
     )
-    projection = torch.load(handle.projection_path, map_location="cpu", weights_only=False)
+    projection = torch.load(handle.projection_path, map_location="cpu", weights_only=True)
     pipe.denoising_model().LQ_proj_in.load_state_dict(projection, strict=True)
     del projection
     pipe.enable_vram_management(num_persistent_param_in_dit=None)
