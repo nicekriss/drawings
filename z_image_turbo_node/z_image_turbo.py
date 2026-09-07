@@ -362,7 +362,7 @@ class ToobusyZImageTurbo:
             print("[toobusy Z-Image Turbo] Using internal CLIP loader.")
             clip = _load_cached("CLIPLoader", clip_name=clip_name, type="lumina2", device="default")
         else:
-            print("[toobusy Z-Image Turbo] Both conditioning overrides connected and no LoRA active — skipping the CLIP loader.")
+            print("[toobusy Z-Image Turbo] Both conditioning overrides connected and no LoRA active - skipping the CLIP loader.")
             clip = None
 
         if vae_override is not None:
@@ -403,7 +403,7 @@ class ToobusyZImageTurbo:
         # change strength.
         if latent_override is not None:
             if image is not None:
-                print("[toobusy Z-Image Turbo] Both latent_override and image connected — the latent wins, image input ignored.")
+                print("[toobusy Z-Image Turbo] Both latent_override and image connected - the latent wins, image input ignored.")
             latent_image = latent_override
             latent_w, latent_h = _latent_dims(latent_override)
             if latent_w > 0 and latent_h > 0:

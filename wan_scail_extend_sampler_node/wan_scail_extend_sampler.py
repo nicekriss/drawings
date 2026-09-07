@@ -649,7 +649,7 @@ class ToobusyWanSCAILExtendSampler:
                 print(
                     f"[toobusy Wan SCAIL] Warning: planned {requested} output frames exceed "
                     f"pose_video length ({pose_len}). The video can't run longer than the driving "
-                    "pose — shorten the target or supply a longer pose_video."
+                    "pose - shorten the target or supply a longer pose_video."
                 )
 
         if pose_video_mask is not None:
@@ -660,7 +660,7 @@ class ToobusyWanSCAILExtendSampler:
                 print(
                     f"[toobusy Wan SCAIL] Warning: pose_video_mask background looks {estimated} "
                     f"but {mode_name} mode expects {expected}. Set replacement_mode to the SAME "
-                    "value on this node and on 'Create SCAIL-2 Colored Mask' — mismatched mask "
+                    "value on this node and on 'Create SCAIL-2 Colored Mask' - mismatched mask "
                     "conventions degrade quality, especially with multiple people."
                 )
 

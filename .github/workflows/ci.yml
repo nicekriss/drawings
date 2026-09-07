@@ -14,28 +14,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Byte-compile all node packages
+      - name: Byte-compile every node package
         run: |
-          python -m compileall -q \
-            __init__.py \
-            flashvsr_node \
-            hires_upscale_node \
-            load_clip_node \
-            ideogram4_t2i_node \
-            ideogram_layout_builder \
-            ideogram_prompt_polish_node \
-            keyframe_maker_node \
-            layout_text_overlay_node \
-            ltx23_compact_sampler_node \
-            minimax_h3_image_latent_node \
-            minimax_h3_optional_reference_node \
-            minimax_h3_semantic_reference_node \
-            paint_canvas_node \
-            storyboard_board_node \
-            wan_animate2_long_sampler_node \
-            wan_scail_extend_sampler_node \
-            z_image_turbo_node \
-            zit_controlnet_node
+          # Compile the whole repository so a newly added package can never be
+          # left out of this list the way it was before v0.4.11.
+          python -m compileall -q .
       - name: Node behaviour regression tests (no ComfyUI runtime)
         run: |
           for f in tests/test_*.py; do

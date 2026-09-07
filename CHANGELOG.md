@@ -2,6 +2,37 @@
 
 이 프로젝트의 주요 변경 사항을 기록합니다. (Keep a Changelog 형식, 날짜는 YYYY-MM-DD)
 
+## [0.4.11] - 2026-09-07
+
+### Security
+- `torch.load`는 이제 모든 호출부에서 `weights_only=True`를 씁니다. FlashVSR
+  백엔드의 `LQ_proj_in` 프로젝션과 `posi_prompt` 텐서를 읽던 두 곳이 임의 pickle을
+  역직렬화할 수 있었습니다. 두 체크포인트 모두 `weights_only=True`로 동일하게
+  로드되는 것을 실제 파일로 확인했습니다.
+
+### Fixed
+- 선택 의존성이 없는 패키지 하나가 toobusy 노드 **전체**를 사라지게 만들던 문제를
+  구조적으로 막았습니다. 이제 하위 패키지를 각각 격리해서 임포트하고, 실패한
+  패키지만 건너뛴 뒤 이유를 ComfyUI 시작 로그에 남깁니다
+  (`[toobusy] skipped node package ...`).
+- cp949/cp932 콘솔(한국어·일본어 Windows)에서 `UnicodeEncodeError`로 노드 실행이
+  중단되던 `print()` 9곳의 em dash를 ASCII로 바꿨습니다.
+- FlashVSR의 모델 폴더 등록이 임포트 시점에 실패하면 패키지가 통째로 죽던 것을
+  막고 경고만 남기도록 했습니다.
+
+### Changed
+- CI가 저장소 전체를 바이트컴파일합니다. 이전에는 수동으로 나열한 목록에서
+  7개 패키지가 빠져 있었습니다.
+- `tests/test_package_registration.py` 추가: 등록되지 않은 노드 패키지, 표시
+  이름이 없는 노드, 격리되지 않은 임포트, `weights_only=True`가 아닌 `torch.load`,
+  ASCII가 아닌 콘솔 출력을 정적으로 검사합니다.
+
+### Note
+- Comfy Registry에서 0.4.9와 0.4.10이 `Banned` 상태라 ComfyUI Manager는 계속
+  0.4.8을 설치합니다. 그래서 `toobusy MiniMax H3 Semantic Reference`가 노드
+  목록에 나타나지 않습니다. 해결될 때까지는 `git clone` 또는 Manager의
+  **Install via Git URL** 로 설치하세요.
+
 ## [0.4.10] - 2026-09-01
 
 ### Fixed

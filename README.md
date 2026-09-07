@@ -5,7 +5,7 @@
 
 > **Fold the graph.** — toobusy folds tedious multi-step ComfyUI workflows into single production nodes.
 
-현재 문서는 **v0.4.10** 기준입니다.
+현재 문서는 **v0.4.11** 기준입니다.
 
 ## Quick Start
 
@@ -22,6 +22,13 @@ git pull
 ```
 
 ComfyUI를 재시작하세요. 프런트엔드(JS) 변경을 받은 뒤에는 브라우저를 강력 새로고침(hard refresh) 하는 것을 권장합니다.
+
+> **ComfyUI Manager로 설치할 때 주의.** Manager는 Comfy Registry에 올라간 버전을 받아옵니다.
+> 지금은 0.4.9 / 0.4.10이 레지스트리에서 내려가 있어서 Manager로 설치하면 **0.4.8**이 깔리고,
+> 0.4.9에서 추가된 MiniMax H3 캐릭터시트 노드들이 노드 목록에 나오지 않습니다.
+> 설치는 성공하고 다른 노드도 정상 동작하므로 원인을 찾기 어렵습니다.
+> 최신 노드가 필요하면 위의 `git clone`을 쓰거나 Manager의 **Install via Git URL**에
+> `https://github.com/nicekriss/toobusy` 를 넣으세요.
 
 ### MiniMax H3 Single-Image Editing
 
@@ -390,6 +397,28 @@ v0.2.10부터 파일명 퍼지 스캔으로 Z-Image 모델/텍스트 인코더/V
 ### Load CLIP으로 Llama/Dolphin GGUF를 로드했는데 Text Generate가 안 됩니다.
 
 로드 자체와 `generate()` 지원은 다릅니다. ComfyUI 래퍼상 Text Generate 프롬프트 인핸서로는 Gemma 계열이 가장 안전합니다.
+
+### 노드 목록에 `toobusy MiniMax H3 Semantic Reference`가 없습니다.
+
+설치된 버전이 0.4.8 이하입니다. 이 노드는 **0.4.9에서 추가**됐습니다.
+패키지는 오류 없이 설치되고 나머지 toobusy 노드도 전부 정상 동작하기 때문에
+설치 실패처럼 보이지 않는 것이 함정입니다. 재설치해도 같은 0.4.8을 다시 받습니다.
+
+| 노드 | 처음 들어간 버전 |
+| --- | --- |
+| `toobusy MiniMax H3 Image Latent` | v0.4.8 |
+| `toobusy MiniMax H3 Semantic Reference` | v0.4.9 |
+| `toobusy MiniMax H3 Reference Manifest` | v0.4.9 |
+| `toobusy MiniMax H3 Optional Reference` | v0.4.9 |
+
+`custom_nodes/toobusy/pyproject.toml`의 `version` 값으로 설치된 버전을 확인할 수 있습니다.
+해결은 위 Quick Start의 `git clone` 또는 Manager의 **Install via Git URL** 입니다.
+
+### toobusy 노드가 하나도 안 보입니다.
+
+v0.4.11부터는 선택 의존성이 빠져도 **그 패키지 하나만** 빠지고 나머지 노드는 그대로 로드됩니다.
+그래도 전부 안 보인다면 ComfyUI 시작 로그에서 `[toobusy] skipped node package ...` 줄을 찾으세요.
+어떤 패키지가 왜 빠졌는지와, 어떤 `requirements_*.txt`를 설치해야 하는지가 그 줄에 나옵니다.
 
 ### 워크플로우 JSON이 너무 커집니다.
 

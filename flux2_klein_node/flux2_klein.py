@@ -499,7 +499,7 @@ class ToobusyFlux2Klein:
                 target_w, target_h = manual_size
             else:
                 target_w, target_h = ratio_size
-                print("[toobusy Flux2 Klein] size_mode=manual but width/height are 0 — using ratio + megapixels.")
+                print("[toobusy Flux2 Klein] size_mode=manual but width/height are 0 - using ratio + megapixels.")
         elif size_mode == "ratio + megapixels":
             target_w, target_h = ratio_size
         else:  # "from reference"
@@ -508,7 +508,7 @@ class ToobusyFlux2Klein:
                 target_w, target_h = ref_w, ref_h
             else:
                 target_w, target_h = ratio_size
-                print("[toobusy Flux2 Klein] size_mode=from reference but no reference connected — using ratio + megapixels.")
+                print("[toobusy Flux2 Klein] size_mode=from reference but no reference connected - using ratio + megapixels.")
 
         print(f"[toobusy Flux2 Klein] Output size {target_w}x{target_h} (size_mode: {size_mode}).")
 
