@@ -151,6 +151,7 @@ python -m pip install -r custom_nodes/toobusy/requirements_flashvsr.txt
 | 레퍼런스 | `toobusy MiniMax H3 Semantic Reference` / `Reference Manifest` | Gemma 설명과 직접 이미지 전달을 분리하고 실제 Picture 번호를 정리합니다. |
 | 보정 루프 | `toobusy Hires Upscale` | 업스케일 + 리샘플 + VAE Encode를 하이레즈 픽스용 1노드로 접습니다. |
 | 컨트롤 | `toobusy ZIT ControlNet` | Z-Image Turbo 앞에 depth/canny/pose 컨트롤을 모듈처럼 붙입니다. |
+| 음악 | `ABC 악보 스튜디오` | `abc` 칸을 가진 노드(YuE2 · Generate Song 등) 위에 버튼이 붙습니다. 피아노롤로 멜로디를 그리거나 **허밍을 녹음**해 따고, 결과를 ABC 악보 텍스트로 그 칸에 넣습니다. 도레미 건반·지우개·미니맵·코드 반주 재생을 갖춘 단독 HTML 편집기입니다. |
 | 기획 | `toobusy Keyframe Maker` | 아이디어와 참조 이미지를 샷 비트/키프레임 프롬프트로 정리합니다. |
 | 기획 | `toobusy Storyboard Board` | ComfyUI 안에서 이미지 보드와 키프레임 마킹을 처리합니다. |
 | 기획 | `toobusy Paint Canvas` | 그래프 앞단에서 러프 페인팅과 마스크를 만들고 바로 생성 노드로 보냅니다. |
