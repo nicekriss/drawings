@@ -38,7 +38,15 @@ jobs:
         run: npx --yes esbuild js/*.js --outdir=/tmp/esbuild-check --format=esm --log-level=warning
       - name: Frontend unit tests
         run: |
-          for f in tests/js/*.test.mjs; do
+          # 프론트엔드 단위 테스트는 지금 하나도 없다. 글롭이 안 맞으면 셸이
+          # 패턴 문자열을 그대로 넘겨서 node 가 죽으므로, 있을 때만 돈다.
+          shopt -s nullglob
+          files=(tests/js/*.test.mjs)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "프론트엔드 단위 테스트 없음 — 건너뜀"
+            exit 0
+          fi
+          for f in "${files[@]}"; do
             echo "== $f =="
             node "$f"
           done
