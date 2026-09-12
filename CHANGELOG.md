@@ -2,6 +2,21 @@
 
 이 프로젝트의 주요 변경 사항을 기록합니다. (Keep a Changelog 형식, 날짜는 YYYY-MM-DD)
 
+## [0.5.2] - 2026-09-12
+
+### Removed
+- **ABC 악보 스튜디오를 별도 저장소로 분리했습니다** →
+  [nicekriss/toobusy-abc-studio](https://github.com/nicekriss/toobusy-abc-studio).
+  악보 편집기는 영상·이미지 생산 노드와 성격이 뚜렷이 달라서 본체 배포 주기에
+  묶어 둘 이유가 없었습니다. 기능은 하나도 줄지 않았고, 옮긴 저장소에서 그대로
+  씁니다. 0.5.1 이하와 같이 설치하면 버튼이 두 번 붙으니 하나만 두세요.
+- FlashVSR DiT 설정 표에서 이 노드팩이 쓰지 않는 체크포인트 분기 하나를
+  뺐습니다. 이 팩이 싣는 FlashVSR 은 1.3B 계열이라 그 14B 항목은 탈 일이
+  없습니다. 맞는 항목이 없으면 기존대로 `from_diffusers` 로 넘어가고, 그것도
+  아니면 `Unsupported FlashVSR DiT checkpoint format.` 로 분명히 실패합니다.
+  (부수 효과로 Comfy Registry 스캐너가 그 32자리 해시 상수를 비트코인 주소로
+  오인해 붙이던 `contains_btc_address` 오탐이 사라집니다.)
+
 ## [0.5.1] - 2026-09-12
 
 ### Fixed
