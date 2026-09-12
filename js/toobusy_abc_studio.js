@@ -1,6 +1,7 @@
 // ABC 악보 스튜디오 - ComfyUI 붙임 스크립트
 // abc 텍스트 위젯을 가진 노드에 "악보 스튜디오 열기" 버튼을 붙인다.
 import { app } from "../../scripts/app.js";
+import { resolveAbcTarget } from "./abc_studio/resolve.js";
 
 const STUDIO_URL = new URL("./abc_studio/index.html", import.meta.url).href;
 const STYLE_ID = "abcst-style";
@@ -26,7 +27,7 @@ function ensureStyle() {
 
 // 편집기를 띄운다. getAbc()로 지금 악보를 넘기고,
 // 사용자가 "이 악보 쓰기"를 누르면 setAbc(text)로 돌려받는다.
-function openStudio(getAbc, setAbc) {
+function openStudio(getAbc, setAbc, describe) {
   ensureStyle();
   const back = document.createElement("div");
   back.className = "abcst-back";
@@ -39,12 +40,17 @@ function openStudio(getAbc, setAbc) {
   title.textContent = "ABC 악보 스튜디오";
   const tip = document.createElement("span");
   tip.className = "tip";
-  tip.textContent = setAbc ? "다 그린 뒤 아래 '이 악보 쓰기'를 누르면 노드에 들어갑니다" : "미리보기";
   const sp = document.createElement("span");
   sp.className = "sp";
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "닫기";
   bar.append(title, tip, sp, closeBtn);
+
+  function setTip(text, warn) {
+    tip.textContent = text;
+    tip.style.color = warn ? "#ffb4ac" : "#9aa1ad";
+  }
+  setTip(describe ? describe() : "미리보기");
 
   const frame = document.createElement("iframe");
   frame.className = "abcst-frame";
@@ -62,8 +68,11 @@ function openStudio(getAbc, setAbc) {
       try { abc = getAbc() || ""; } catch (_) {}
       frame.contentWindow.postMessage({ source: "abc-studio-host", type: "load", abc }, "*");
     } else if (d.type === "apply") {
-      if (setAbc) setAbc(String(d.abc || ""));
-      close();
+      if (!setAbc) { close(); return; }
+      const result = setAbc(String(d.abc || ""));
+      // 넣을 자리를 못 찾으면 창을 닫지 않는다. 닫아 버리면 악보가 사라진다.
+      if (result && result.ok === false) setTip(result.message, true);
+      else close();
     }
   };
   const onKey = (e) => { if (e.key === "Escape") { e.stopPropagation(); close(); } };
@@ -78,35 +87,58 @@ function openStudio(getAbc, setAbc) {
   back.addEventListener("mousedown", (e) => { if (e.target === back) close(); });
 }
 
-function findAbcWidget(node) {
-  return (node.widgets || []).find(
-    (w) => w.name === "abc" && w.type !== "button" && typeof w.value !== "undefined"
-  );
+function describeTarget(node) {
+  const t = resolveAbcTarget(node, app.graph);
+  if (!t) return "이 노드에는 abc 칸이 없습니다";
+  if (!t.node) return "abc 칸에 꽂힌 선의 출처를 찾지 못했습니다";
+  const where = t.node.title || t.node.type || "연결된 노드";
+  if (!t.widget) return `${where} 에는 글자를 넣을 칸이 없습니다`;
+  if (t.disabled) return `${where} 에 넣습니다. 다만 그 노드가 꺼져 있어 지금은 악보가 전달되지 않습니다`;
+  if (t.viaLink) return `abc 칸에 선이 꽂혀 있어 ${where} 쪽에 넣습니다`;
+  return "다 그린 뒤 아래 '이 악보 쓰기'를 누르면 이 노드에 들어갑니다";
+}
+
+function readAbc(node) {
+  const t = resolveAbcTarget(node, app.graph);
+  return t && t.widget ? t.widget.value : "";
+}
+
+function writeAbc(node, text) {
+  const t = resolveAbcTarget(node, app.graph);
+  if (!t) return { ok: false, message: "이 노드에는 abc 칸이 없습니다" };
+  if (!t.node) return { ok: false, message: "abc 칸에 꽂힌 선의 출처를 찾지 못했습니다. 선을 빼고 다시 시도하세요" };
+  if (!t.widget) {
+    const where = t.node.title || t.node.type || "연결된 노드";
+    return { ok: false, message: `${where} 에는 글자를 넣을 칸이 없습니다. abc 칸의 선을 빼고 다시 누르세요` };
+  }
+  t.widget.value = text;
+  if (t.widget.callback) t.widget.callback(text, app.canvas, t.node);
+  app.graph.setDirtyCanvas(true, true);
+  if (t.disabled) {
+    const where = t.node.title || t.node.type || "연결된 노드";
+    return { ok: false, message: `${where} 에 넣었습니다. 그 노드가 꺼져 있으니 켜야 악보가 반영됩니다` };
+  }
+  return { ok: true };
+}
+
+// abc 위젯이 입력 소켓으로 바뀌어도 버튼은 계속 붙어 있어야 한다.
+function hasAbcSlot(node) {
+  if ((node.widgets || []).some((w) => w && w.name === "abc" && w.type !== "button")) return true;
+  return (node.inputs || []).some((i) => i && i.name === "abc");
 }
 
 function attachButton(node) {
   if (node.__abcStudioReady) return;
-  if (!findAbcWidget(node)) return;
+  if (!hasAbcSlot(node)) return;
   node.__abcStudioReady = true;
   const btn = node.addWidget("button", "🎼 악보 스튜디오 열기", null, () => {
-    const w = findAbcWidget(node);
     openStudio(
-      () => (w ? w.value : ""),
-      (text) => {
-        if (!w) return;
-        w.value = text;
-        if (w.callback) w.callback(text, app.canvas, node);
-        app.graph.setDirtyCanvas(true, true);
-      }
+      () => readAbc(node),
+      (text) => writeAbc(node, text),
+      () => describeTarget(node)
     );
   });
   btn.serialize = false;
-  const idx = node.widgets.indexOf(btn);
-  const wIdx = node.widgets.indexOf(findAbcWidget(node));
-  if (idx > -1 && wIdx > -1 && idx > wIdx) {
-    node.widgets.splice(idx, 1);
-    node.widgets.splice(wIdx, 0, btn);
-  }
   node.setSize(node.computeSize());
 }
 
@@ -122,7 +154,7 @@ app.registerExtension({
   commands: [{
     id: "toobusy.abcStudio.open",
     label: "ABC 악보 스튜디오",
-    function: () => openStudio(() => "", null),
+    function: () => openStudio(() => "", null, () => "미리보기"),
   }],
   menuCommands: [{ path: ["Extensions"], commands: ["toobusy.abcStudio.open"] }],
 });

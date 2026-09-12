@@ -36,3 +36,9 @@ jobs:
           node-version: "20"
       - name: Parse every frontend module (ESM syntax check)
         run: npx --yes esbuild js/*.js --outdir=/tmp/esbuild-check --format=esm --log-level=warning
+      - name: Frontend unit tests
+        run: |
+          for f in tests/js/*.test.mjs; do
+            echo "== $f =="
+            node "$f"
+          done
